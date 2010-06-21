@@ -18,7 +18,15 @@ class Array
     output = FasterCSV.generate do |csv|
       csv << columns.map { |column| column.to_s.humanize } unless options[:headers] == false
       self.each do |item|
-        csv << columns.collect { |column| item.send(column) }
+        csv << columns.collect do |column| 
+          col = item.send(column)
+          # sanitize the output, so that commas don't it off, maybe make this an option down the road?
+          if col.nil?
+            ''
+          else
+            col.is_a?(String) ? col.gsub(/[^a-z0-9]+/i, ' ') : col
+          end
+        end
       end
     end
 
